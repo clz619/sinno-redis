@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>win.sinno</groupId>
+    <artifactId>sinno-redis</artifactId>
+    <version>1.0.0</version>
+
+    <packaging>jar</packaging>
+
+    <properties>
+        <!--unit-->
+        <version.junit>4.12</version.junit>
+        <!--jackson-->
+        <version.jackson.databind>2.8.1</version.jackson.databind>
+
+        <!--common-->
+        <version.commons.lang3>3.4</version.commons.lang3>
+        <version.commons.collections4>4.1</version.commons.collections4>
+
+        <!--log-->
+        <version.slf4j.log4j12>1.7.21</version.slf4j.log4j12>
+
+        <!--redis-->
+        <version.jedis>2.9.0</version.jedis>
+
+        <version.sinno.common>1.0.0</version.sinno.common>
+
+        <!--plugin-->
+        <version.plugin.maven.compiler>3.5.1</version.plugin.maven.compiler>
+
+        <!--project-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <version.java>1.7</version.java>
+    </properties>
+
+    <dependencies>
+
+        <!-- junit-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${version.junit}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- jackson-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${version.jackson.databind}</version>
+        </dependency>
+
+        <!-- apache common lang-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${version.commons.lang3}</version>
+        </dependency>
+        <!-- apache common collections-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${version.commons.collections4}</version>
+        </dependency>
+
+        <!-- slf4j-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${version.slf4j.log4j12}</version>
+        </dependency>
+
+        <!--redis-->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${version.jedis}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>win.sinno</groupId>
+            <artifactId>sinno-common</artifactId>
+            <version>${version.sinno.common}</version>
+        </dependency>
+
+    </dependencies>
+</project>
