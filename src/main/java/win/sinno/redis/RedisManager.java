@@ -1,10 +1,12 @@
 package win.sinno.redis;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import win.sinno.redis.constant.LoggerConfigs;
 import win.sinno.redis.exception.MissAnnotationException;
 import win.sinno.redis.interfaces.IRedisCommand;
 import win.sinno.redis.model.KeyMapPair;
@@ -137,7 +139,7 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             String val = jedis.get(key);
-//            LoggerConfigs.REDIS_LOG.debug("get:{} value:{}", new Object[]{key, val});
+            LoggerConfigs.REDIS_LOG.debug("get:{} value:{}", new Object[]{key, val});
             return val;
         } finally {
             if (jedis != null) {
@@ -156,9 +158,8 @@ public class RedisManager implements IRedisCommand {
         Jedis jedis = null;
         try {
             jedis = getJedis();
-//            String ret =
-            jedis.set(key, value);
-//            LoggerConfigs.REDIS_LOG.info("get:{} value:{} ret:{}", new Object[]{key, value, ret});
+            String ret = jedis.set(key, value);
+            LoggerConfigs.REDIS_LOG.debug("get:{} value:{} ret:{}", new Object[]{key, value, ret});
         } finally {
             if (jedis != null) {
                 jedis.close();
@@ -183,7 +184,7 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             Long ret = jedis.del(keys);
-//            LoggerConfigs.REDIS_LOG.info("del:{} ret:{}", new Object[]{ArrayUtils.toString(keys), ret});
+            LoggerConfigs.REDIS_LOG.debug("del:{} ret:{}", new Object[]{ArrayUtils.toString(keys), ret});
             return ret;
         } finally {
             if (jedis != null) {
@@ -352,7 +353,7 @@ public class RedisManager implements IRedisCommand {
             jedis = getJedis();
 
             Long ret = jedis.lpush(key, values);
-//            LoggerConfigs.REDIS_LOG.info("get:{} value:{},ret:{}", new Object[]{key, ArrayUtils.toString(values), ret});
+            LoggerConfigs.REDIS_LOG.debug("get:{} value:{},ret:{}", new Object[]{key, ArrayUtils.toString(values), ret});
             return ret;
         } finally {
             if (jedis != null) {
@@ -396,7 +397,7 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             String ret = jedis.lpop(key);
-//            LoggerConfigs.REDIS_LOG.info("lpop:{} val:{}", new Object[]{key, ret});
+            LoggerConfigs.REDIS_LOG.debug("lpop:{} val:{}", new Object[]{key, ret});
             return ret;
         } finally {
             if (jedis != null) {
@@ -424,7 +425,7 @@ public class RedisManager implements IRedisCommand {
             }
 
             ListParser.string2Obj(obj, value);
-//            LoggerConfigs.REDIS_LOG.info("lpop:{} val:{}", new Object[]{key, ret});
+            LoggerConfigs.REDIS_LOG.debug("lpop:{} val:{}", new Object[]{key, obj});
             return obj;
         } finally {
             if (jedis != null) {
@@ -445,7 +446,7 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             Long ret = jedis.rpush(key, values);
-//            LoggerConfigs.REDIS_LOG.info("rpush:{} val:{} ret:{}", new Object[]{key, ArrayUtils.toString(values), ret});
+            LoggerConfigs.REDIS_LOG.debug("rpush:{} val:{} ret:{}", new Object[]{key, ArrayUtils.toString(values), ret});
             return ret;
         } finally {
             if (jedis != null) {
@@ -488,7 +489,7 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             String ret = jedis.rpop(key);
-//            LoggerConfigs.REDIS_LOG.info("rpop:{} ret:{}", new Object[]{key, ret});
+            LoggerConfigs.REDIS_LOG.debug("rpop:{} ret:{}", new Object[]{key, ret});
             return ret;
         } finally {
             if (jedis != null) {
@@ -516,7 +517,7 @@ public class RedisManager implements IRedisCommand {
             }
 
             ListParser.string2Obj(obj, value);
-//            LoggerConfigs.REDIS_LOG.info("lpop:{} val:{}", new Object[]{key, ret});
+            LoggerConfigs.REDIS_LOG.debug("lpop:{} val:{}", new Object[]{key, obj});
             return obj;
         } finally {
             if (jedis != null) {
@@ -543,7 +544,7 @@ public class RedisManager implements IRedisCommand {
 
             List<String> ret = jedis.lrange(key, start, end);
 
-//            LoggerConfigs.REDIS_LOG.info("lrange:{} start:{} end:{} ret:{}", new Object[]{key, start, end, ret});
+            LoggerConfigs.REDIS_LOG.debug("lrange:{} start:{} end:{} ret:{}", new Object[]{key, start, end, ret});
 
             return ret;
         } finally {
@@ -574,10 +575,10 @@ public class RedisManager implements IRedisCommand {
             if (CollectionUtils.isNotEmpty(valueList)) {
                 return Collections.emptyList();
             }
-//            LoggerConfigs.REDIS_LOG.info("lrange:{} start:{} end:{} ret:{}", new Object[]{key, start, end, ret});
 
             List<T> ret = ListParser.string2Obj(t, valueList);
 
+            LoggerConfigs.REDIS_LOG.debug("lrange:{} start:{} end:{} ret:{}", new Object[]{key, start, end, ret});
             return ret;
         } finally {
             if (jedis != null) {
@@ -599,7 +600,7 @@ public class RedisManager implements IRedisCommand {
 
             Long ret = jedis.llen(key);
 
-//            LoggerConfigs.REDIS_LOG.info("llen:{} ret:{}", new Object[]{key, ret});
+            LoggerConfigs.REDIS_LOG.debug("llen:{} ret:{}", new Object[]{key, ret});
 
             return ret;
         } finally {
@@ -621,7 +622,7 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             String ret = jedis.lindex(key, index);
-//            LoggerConfigs.REDIS_LOG.info("lindex:{} index:{} ret:{}", new Object[]{key, index, ret});
+            LoggerConfigs.REDIS_LOG.debug("lindex:{} index:{} ret:{}", new Object[]{key, index, ret});
             return ret;
         } finally {
             if (jedis != null) {
@@ -646,7 +647,7 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             Long ret = jedis.lrem(key, count, value);
-//            LoggerConfigs.REDIS_LOG.info("lrange:{} count:{} value:{} ret:{}", new Object[]{key, count, value, ret});
+            LoggerConfigs.REDIS_LOG.debug("lrem key:{} count:{} value:{} ret:{}", new Object[]{key, count, value, ret});
 
             return ret;
         } finally {
@@ -671,7 +672,8 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             String ret = jedis.ltrim(key, start, stop);
-//            LoggerConfigs.REDIS_LOG.info("lrange:{} count:{} value:{} ret:{}", new Object[]{key, count, value, ret});
+
+            LoggerConfigs.REDIS_LOG.debug("ltrim key:{} start:{} stop:{} ret:{}", new Object[]{key, start, stop, ret});
 
             return ret;
         } finally {
@@ -696,7 +698,8 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             Long ret = jedis.sadd(key, members);
-//            LoggerConfigs.REDIS_LOG.info("sadd:{} members:{} ret:{}", new Object[]{key, ArrayUtils.toString(members), ret});
+
+            LoggerConfigs.REDIS_LOG.debug("sadd:{} members:{} ret:{}", new Object[]{key, ArrayUtils.toString(members), ret});
 
             return ret;
         } finally {
@@ -724,6 +727,8 @@ public class RedisManager implements IRedisCommand {
             KeyValuePair keyValuePair = SetParser.obj2Set(t);
             Long ret = jedis.sadd(keyValuePair.getKey(), keyValuePair.getValue());
 
+            LoggerConfigs.REDIS_LOG.debug("sadd obj:{} ret:{}", new Object[]{t, ret});
+
             return ret;
         } finally {
             if (jedis != null) {
@@ -743,7 +748,8 @@ public class RedisManager implements IRedisCommand {
         try {
             jedis = getJedis();
             Long ret = jedis.scard(key);
-//            LoggerConfigs.REDIS_LOG.info("scard:{} ret:{}", new Object[]{key, ret});
+
+            LoggerConfigs.REDIS_LOG.debug("scard key:{} ret:{}", new Object[]{key, ret});
 
             return ret;
         } finally {
