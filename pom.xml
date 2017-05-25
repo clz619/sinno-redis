@@ -93,6 +93,6 @@
             <artifactId>redisson</artifactId>
             <version>${version.redisson}</version>
         </dependency>
-        
+
     </dependencies>
 </project>
