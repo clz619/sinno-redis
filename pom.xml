@@ -25,7 +25,7 @@
 
         <!--redis-->
         <version.jedis>2.9.0</version.jedis>
-
+        <version.redisson>2.9.2</version.redisson>
         <version.sinno.common>1.0.0</version.sinno.common>
 
         <!--plugin-->
@@ -45,6 +45,13 @@
             <artifactId>junit</artifactId>
             <version>${version.junit}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!--sinno-->
+        <dependency>
+            <groupId>win.sinno</groupId>
+            <artifactId>sinno-common</artifactId>
+            <version>${version.sinno.common}</version>
         </dependency>
 
         <!-- jackson-->
@@ -82,10 +89,10 @@
         </dependency>
 
         <dependency>
-            <groupId>win.sinno</groupId>
-            <artifactId>sinno-common</artifactId>
-            <version>${version.sinno.common}</version>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>${version.redisson}</version>
         </dependency>
-
+        
     </dependencies>
 </project>

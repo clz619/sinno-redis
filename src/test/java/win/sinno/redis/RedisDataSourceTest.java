@@ -10,7 +10,7 @@ import redis.clients.jedis.JedisPoolConfig;
  * @version : 1.0
  * @since : 2017/1/10 上午11:39
  */
-public class RedisManagerTest {
+public class RedisDataSourceTest {
 
     public static String host = "10.1.1.131";
     public static int port = 6379;
@@ -22,11 +22,11 @@ public class RedisManagerTest {
     @Test
     public void testRedisManager() {
 
-        RedisManager redisManager = new RedisManager(new JedisPoolConfig(), host, port, timeout, password, database);
+        RedisDataSource redisDataSource = new RedisDataSource(new JedisPoolConfig(), host, port, timeout, password, database);
 
-        redisManager.set("name", "ccc");
+        redisDataSource.set("name", "ccc");
 
-        System.out.println(redisManager.get("name"));
+        System.out.println(redisDataSource.get("name"));
     }
 
 }

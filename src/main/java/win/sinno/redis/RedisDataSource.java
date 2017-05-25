@@ -26,8 +26,7 @@ import java.util.*;
  * @version : 1.0
  * @since : 16/6/23 下午12:00
  */
-public class RedisManager implements IRedisCommand {
-
+public class RedisDataSource implements IRedisCommand {
 
     private JedisPoolConfig jedisPoolConfig;
 
@@ -99,10 +98,10 @@ public class RedisManager implements IRedisCommand {
         this.pool = pool;
     }
 
-    public RedisManager() {
+    public RedisDataSource() {
     }
 
-    public RedisManager(JedisPoolConfig jedisPoolConfig, String host, int port, int timeout, String password, Integer database) {
+    public RedisDataSource(JedisPoolConfig jedisPoolConfig, String host, int port, int timeout, String password, Integer database) {
         // redis manager
         pool = new JedisPool(jedisPoolConfig, host, port, timeout, password, database);
     }
@@ -154,12 +153,13 @@ public class RedisManager implements IRedisCommand {
      * @param key
      * @param value
      */
-    public void set(String key, String value) {
+    public String set(String key, String value) {
         Jedis jedis = null;
         try {
             jedis = getJedis();
             String ret = jedis.set(key, value);
             LoggerConfigs.REDIS_LOG.debug("get:{} value:{} ret:{}", new Object[]{key, value, ret});
+            return ret;
         } finally {
             if (jedis != null) {
                 jedis.close();
@@ -167,11 +167,97 @@ public class RedisManager implements IRedisCommand {
         }
     }
 
-    public void setNxPx(String key, String value, long time) {
+    /**
+     * 将key设置值为value，如果key不存在，这种情况下等同SET命令。 当key存在时，什么也不做。SETNX是”SET if Not eXists”的简写。
+     * <p>
+     * 返回
+     * 1 如果key被设置了
+     * 0 如果key没有被设置
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    public Long setnx(String key, String value) {
         Jedis jedis = null;
         try {
             jedis = getJedis();
-            jedis.set(key, value, "NX", "PX", time);
+            Long ret = jedis.setnx(key, value);
+            LoggerConfigs.REDIS_LOG.debug("setnx:{} value:{} ret:{}", new Object[]{key, value, ret});
+            return ret;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    /**
+     * 设置key对应字符串value，并且设置key在给定的seconds时间之后超时过期。
+     *
+     * @param key
+     * @param seconds
+     * @param value
+     */
+    public String setex(String key, int seconds, String value) {
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            String ret = jedis.setex(key, seconds, value);
+            LoggerConfigs.REDIS_LOG.debug("setex:{} seconds:{} value:{} ret:{}", new Object[]{key, seconds, value, ret});
+            return ret;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String setnxpx(String key, String value, long milliseconds) {
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            String ret = jedis.set(key, value, "NX", "PX", milliseconds);
+            return ret;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String setnxex(String key, String value, long seconds) {
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            String ret = jedis.set(key, value, "NX", "EX", seconds);
+            return ret;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String setxxpx(String key, String value, long milliseconds) {
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            String ret = jedis.set(key, value, "XX", "PX", milliseconds);
+            return ret;
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
+    public String setxxex(String key, String value, long seconds) {
+        Jedis jedis = null;
+        try {
+            jedis = getJedis();
+            String ret = jedis.set(key, value, "XX", "EX", seconds);
+            return ret;
         } finally {
             if (jedis != null) {
                 jedis.close();

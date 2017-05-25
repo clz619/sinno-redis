@@ -1,7 +1,7 @@
 package win.sinno.redis.interfaces;
 
 
-import win.sinno.redis.RedisVisitorBaseFacade;
+import win.sinno.redis.RedisVisitor;
 import win.sinno.redis.model.SyncResult;
 
 /**
@@ -18,7 +18,7 @@ public interface IRedisSync {
      *
      * @return
      */
-    RedisVisitorBaseFacade getRedisVisitor();
+    RedisVisitor getRedisVisitor();
 
     /**
      * 是否存在于redis

@@ -16,34 +16,32 @@ import java.util.*;
  * @version : 1.0
  * @since : 16/6/29 上午11:49
  */
-public abstract class RedisVisitorBaseFacade implements IRedisCommand {
+public abstract class RedisVisitor implements IRedisCommand {
 
     // redis 管理器
-    private RedisManager redisManager;
+    private RedisDataSource redisDataSource;
 
     /**
      * 关键字基础数据
      */
     private String baseKey;
 
-    public RedisVisitorBaseFacade(String baseKey) {
+    public RedisVisitor(String baseKey) {
         this.baseKey = baseKey;
     }
 
-    public RedisManager getRedisManager() {
-        return redisManager;
+    public RedisDataSource getRedisDataSource() {
+        return redisDataSource;
     }
 
-    public void setRedisManager(RedisManager redisManager) {
-        this.redisManager = redisManager;
+    public void setRedisDataSource(RedisDataSource redisDataSource) {
+        this.redisDataSource = redisDataSource;
     }
-
 
     public String genKey(String key) {
         if (StringUtils.isNotEmpty(key)) {
             return getBaseKey() + ":" + key;
         }
-
         return getBaseKey();
     }
 
@@ -57,10 +55,9 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      * @param key
      * @return
      */
-
     public String get(String key) {
         try {
-            return redisManager.get(genKey(key));
+            return redisDataSource.get(genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -73,22 +70,67 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      * @param key
      * @param value
      */
-
-    public void set(String key, String value) {
+    public String set(String key, String value) {
         try {
-            redisManager.set(genKey(key), value);
+            return redisDataSource.set(genKey(key), value);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
+        return null;
     }
 
-
-    public void setNxPx(String key, String value, long time) {
+    /**
+     * set key value
+     * expire key seconds
+     *
+     * @param key
+     * @param seconds
+     * @param value
+     * @return
+     */
+    public String setex(String key, int seconds, String value) {
         try {
-            redisManager.setNxPx(genKey(key), value, time);
+            return redisDataSource.setex(genKey(key), seconds, value);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
+        return null;
+    }
+
+    public String setnxpx(String key, String value, long milliseconds) {
+        try {
+            return redisDataSource.setnxpx(genKey(key), value, milliseconds);
+        } catch (Exception e) {
+            LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public String setnxex(String key, String value, long seconds) {
+        try {
+            return redisDataSource.setnxex(genKey(key), value, seconds);
+        } catch (Exception e) {
+            LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public String setxxpx(String key, String value, long milliseconds) {
+        try {
+            return redisDataSource.setxxpx(genKey(key), value, milliseconds);
+        } catch (Exception e) {
+            LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
+        }
+        return null;
+    }
+
+    public String setxxex(String key, String value, long seconds) {
+        try {
+            return redisDataSource.setxxex(genKey(key), value, seconds);
+        } catch (Exception e) {
+            LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
+        }
+        return null;
     }
 
     /**
@@ -108,7 +150,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
             for (String key : keys) {
                 keySet.add(genKey(key));
             }
-            return redisManager.del(keySet.toArray(new String[0]));
+            return redisDataSource.del(keySet.toArray(new String[0]));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -124,7 +166,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public Long expire(String key, int seconds) {
         try {
-            redisManager.expire(genKey(key), seconds);
+            redisDataSource.expire(genKey(key), seconds);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -140,7 +182,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public Long expireAt(String key, long unixTime) {
         try {
-            redisManager.expireAt(genKey(key), unixTime);
+            redisDataSource.expireAt(genKey(key), unixTime);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -155,7 +197,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public Set<String> keys(String pattern) {
         try {
-            return redisManager.keys(pattern);
+            return redisDataSource.keys(pattern);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -165,7 +207,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long decr(String key) {
         try {
-            return redisManager.decr(genKey(key));
+            return redisDataSource.decr(genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -175,7 +217,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long decrBy(String key, Long decrement) {
         try {
-            return redisManager.decrBy(this.genKey(key), decrement);
+            return redisDataSource.decrBy(this.genKey(key), decrement);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -191,7 +233,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long incr(String key) {
         try {
-            return redisManager.incr(this.genKey(key));
+            return redisDataSource.incr(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -208,7 +250,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long incrBy(String key, int increment) {
         try {
-            return redisManager.incrBy(this.genKey(key), increment);
+            return redisDataSource.incrBy(this.genKey(key), increment);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -224,7 +266,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public Long lpush(String key, String... values) {
         try {
-            return redisManager.lpush(this.genKey(key), values);
+            return redisDataSource.lpush(this.genKey(key), values);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -239,7 +281,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public <T> Long lpush(T obj) throws MissAnnotationException {
         try {
-            return redisManager.lpush(obj);
+            return redisDataSource.lpush(obj);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -256,7 +298,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String lpop(String key) {
         try {
-            return redisManager.lpop(this.genKey(key));
+            return redisDataSource.lpop(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -272,7 +314,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public <T> T lpop(T obj, String key) {
         try {
-            return redisManager.lpop(obj, this.genKey(key));
+            return redisDataSource.lpop(obj, this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -289,7 +331,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long rpush(String key, String... values) {
         try {
-            return redisManager.rpush(this.genKey(key), values);
+            return redisDataSource.rpush(this.genKey(key), values);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -304,7 +346,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public <T> Long rpush(T obj) throws MissAnnotationException {
         try {
-            return redisManager.rpush(obj);
+            return redisDataSource.rpush(obj);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -320,7 +362,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String rpop(String key) {
         try {
-            return redisManager.rpop(this.genKey(key));
+            return redisDataSource.rpop(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -336,7 +378,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public <T> T rpop(T obj, String key) {
         try {
-            return redisManager.rpop(obj, this.genKey(key));
+            return redisDataSource.rpop(obj, this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -354,7 +396,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public List<String> lrange(String key, long start, long end) {
         try {
-            return redisManager.lrange(this.genKey(key), start, end);
+            return redisDataSource.lrange(this.genKey(key), start, end);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -374,7 +416,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public <T> List<T> lrange(T t, String key, long start, long end) {
         try {
-            return redisManager.lrange(t, this.genKey(key), start, end);
+            return redisDataSource.lrange(t, this.genKey(key), start, end);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -390,7 +432,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long llen(String key) {
         try {
-            return redisManager.llen(this.genKey(key));
+            return redisDataSource.llen(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -407,7 +449,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String lindex(String key, long index) {
         try {
-            return redisManager.lindex(this.genKey(key), index);
+            return redisDataSource.lindex(this.genKey(key), index);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -415,7 +457,8 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
     }
 
     /**
-     * 列表-删除列表key区间value的值 count>0时:从表头开始向表尾搜索,移除与value值相等的元素,数量为value
+     * 列表-删除列表key区间value的值
+     * count>0时:从表头开始向表尾搜索,移除与value值相等的元素,数量为value
      * count<0时:从表尾开始向表头搜索,移除与value值相等的元素,数量为value count=0时:移除表中所有与value相等的值
      *
      * @param key
@@ -426,7 +469,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long lrem(String key, long count, String value) {
         try {
-            return redisManager.lrem(this.genKey(key), count, value);
+            return redisDataSource.lrem(this.genKey(key), count, value);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -435,7 +478,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String ltrim(String key, long start, long stop) {
         try {
-            return redisManager.ltrim(this.genKey(key), start, stop);
+            return redisDataSource.ltrim(this.genKey(key), start, stop);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -452,7 +495,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long sadd(String key, String... members) {
         try {
-            return redisManager.sadd(this.genKey(key), members);
+            return redisDataSource.sadd(this.genKey(key), members);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -469,7 +512,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public <T> Long sadd(T t) {
         try {
-            return redisManager.sadd(t);
+            return redisDataSource.sadd(t);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -485,7 +528,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long scard(String key) {
         try {
-            return redisManager.scard(this.genKey(key));
+            return redisDataSource.scard(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -501,7 +544,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Set<String> smembers(String key) {
         try {
-            return redisManager.smembers(this.genKey(key));
+            return redisDataSource.smembers(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -518,7 +561,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public <T> Set<T> smembers(T t, String key) {
         try {
-            return redisManager.smembers(t, this.genKey(key));
+            return redisDataSource.smembers(t, this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -535,7 +578,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public boolean sismember(String key, String member) {
         try {
-            return redisManager.sismember(this.genKey(key), member);
+            return redisDataSource.sismember(this.genKey(key), member);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -560,7 +603,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
                 keySet.add(this.genKey(key));
             }
 
-            return redisManager.sdiff(keySet.toArray(new String[0]));
+            return redisDataSource.sdiff(keySet.toArray(new String[0]));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -584,7 +627,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
             for (String key : keys) {
                 keySet.add(this.genKey(key));
             }
-            return redisManager.sinter(keySet.toArray(new String[0]));
+            return redisDataSource.sinter(keySet.toArray(new String[0]));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -608,7 +651,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
             for (String key : keys) {
                 keySet.add(this.genKey(key));
             }
-            return redisManager.sunion(keySet.toArray(new String[0]));
+            return redisDataSource.sunion(keySet.toArray(new String[0]));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -624,7 +667,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String spop(String key) {
         try {
-            return redisManager.spop(this.genKey(key));
+            return redisDataSource.spop(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -641,7 +684,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Set<String> spop(String key, long count) {
         try {
-            return redisManager.spop(this.genKey(key), count);
+            return redisDataSource.spop(this.genKey(key), count);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -657,7 +700,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String srandmember(String key) {
         try {
-            return redisManager.srandmember(this.genKey(key));
+            return redisDataSource.srandmember(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -674,7 +717,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public List<String> srandmember(String key, int count) {
         try {
-            return redisManager.srandmember(this.genKey(key), count);
+            return redisDataSource.srandmember(this.genKey(key), count);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -691,7 +734,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long srem(String key, String... members) {
         try {
-            return redisManager.srem(this.genKey(key), members);
+            return redisDataSource.srem(this.genKey(key), members);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -701,7 +744,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long zadd(String key, double score, String member) {
         try {
-            return redisManager.zadd(this.genKey(key), score, member);
+            return redisDataSource.zadd(this.genKey(key), score, member);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -710,7 +753,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public <T> Long zadd(T t) throws MissAnnotationException {
         try {
-            return redisManager.zadd(t);
+            return redisDataSource.zadd(t);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -719,7 +762,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long zcard(String key) {
         try {
-            return redisManager.zcard(this.genKey(key));
+            return redisDataSource.zcard(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -728,7 +771,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public List<String> zrange(String key, Long start, Long stop) {
         try {
-            return redisManager.zrange(this.genKey(key), start, stop);
+            return redisDataSource.zrange(this.genKey(key), start, stop);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -743,7 +786,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
      */
     public List<String> zrangeAll(String key) {
         try {
-            return redisManager.zrangeAll(this.genKey(key));
+            return redisDataSource.zrangeAll(this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -753,7 +796,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public <T> List<T> zrangeAll4Obj(T t, String key) {
         try {
-            return redisManager.zrangeAll4Obj(t, this.genKey(key));
+            return redisDataSource.zrangeAll4Obj(t, this.genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -771,7 +814,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long hset(String key, String field, String value) {
         try {
-            return redisManager.hset(genKey(key), field, value);
+            return redisDataSource.hset(genKey(key), field, value);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -788,7 +831,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String hget(String key, String field) {
         try {
-            return redisManager.hget(genKey(key), field);
+            return redisDataSource.hget(genKey(key), field);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -804,7 +847,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Map<String, String> hgetAll(String key) {
         try {
-            return redisManager.hgetAll(genKey(key));
+            return redisDataSource.hgetAll(genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -821,7 +864,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public <V> V hgetAll(V t, String key) {
         try {
-            return redisManager.hgetAll(t, genKey(key));
+            return redisDataSource.hgetAll(t, genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -837,7 +880,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Set<String> hkeys(String key) {
         try {
-            return redisManager.hkeys(genKey(key));
+            return redisDataSource.hkeys(genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -853,7 +896,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public List<String> hvals(String key) {
         try {
-            return redisManager.hvals(genKey(key));
+            return redisDataSource.hvals(genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -869,7 +912,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long hlen(String key) {
         try {
-            return redisManager.hlen(genKey(key));
+            return redisDataSource.hlen(genKey(key));
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -886,7 +929,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public List<String> hmget(String key, String... fields) {
         try {
-            return redisManager.hmget(genKey(key), fields);
+            return redisDataSource.hmget(genKey(key), fields);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -904,7 +947,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public <V> V hmget(V t, String key, String... fields) {
         try {
-            return redisManager.hmget(t, genKey(key), fields);
+            return redisDataSource.hmget(t, genKey(key), fields);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -920,7 +963,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String hmset(KeyMapPair keyMapPair) {
         try {
-            return redisManager.hmset(keyMapPair);
+            return redisDataSource.hmset(keyMapPair);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -936,7 +979,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public <V> String hmset(V t) {
         try {
-            return redisManager.hmset(t);
+            return redisDataSource.hmset(t);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -945,7 +988,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public <T> String hmsetAndExpire(T t, int seconds) {
         try {
-            return redisManager.hmsetAndExpire(t, seconds);
+            return redisDataSource.hmsetAndExpire(t, seconds);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -963,7 +1006,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public String hmset(String key, Map<String, String> hash) {
         try {
-            return redisManager.hmset(genKey(key), hash);
+            return redisDataSource.hmset(genKey(key), hash);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -981,7 +1024,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long hsetnx(String key, String field, String value) {
         try {
-            return redisManager.hsetnx(genKey(key), field, value);
+            return redisDataSource.hsetnx(genKey(key), field, value);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -999,7 +1042,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long hincrBy(String key, String field, long value) {
         try {
-            return redisManager.hincrBy(genKey(key), field, value);
+            return redisDataSource.hincrBy(genKey(key), field, value);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -1016,7 +1059,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Boolean hexists(String key, String field) {
         try {
-            return redisManager.hexists(genKey(key), field);
+            return redisDataSource.hexists(genKey(key), field);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
@@ -1032,7 +1075,7 @@ public abstract class RedisVisitorBaseFacade implements IRedisCommand {
 
     public Long hdel(String key, String... fields) {
         try {
-            return redisManager.hdel(genKey(key), fields);
+            return redisDataSource.hdel(genKey(key), fields);
         } catch (Exception e) {
             LoggerConfigs.REDIS_LOG.error(e.getMessage(), e);
         }
