@@ -32,17 +32,20 @@ public class RedissonTest {
 
     @Test
     public void startTest() {
-        RedissonClient redissonClient = Redisson.create(config);
-
         RAtomicLong rAtomicLong = redissonClient.getAtomicLong("myLong");
         rAtomicLong.set(3);
         rAtomicLong.compareAndSet(3, 401);
     }
 
     @Test
-    public void testBucket() {
-        RedissonClient redissonClient = Redisson.create(config);
+    public void testAtomicLong() {
+        RAtomicLong atomicLong = redissonClient.getAtomicLong("idwork-111");
+        System.out.println(atomicLong);
+        System.out.println(atomicLong.get());
+    }
 
+    @Test
+    public void testBucket() {
         RBucket<String> bucket = redissonClient.getBucket("hello");
         String h = bucket.get();
         System.out.println("get hello:" + h);
@@ -117,7 +120,7 @@ public class RedissonTest {
         lock.lock();
         System.out.println("lock1");
 
-        Thread.sleep(10000l);
+        Thread.sleep(1000000l);
     }
 
 
@@ -127,7 +130,7 @@ public class RedissonTest {
         lock.lock();
         System.out.println("lock2");
 
-        Thread.sleep(10000l);
+        Thread.sleep(1000000l);
     }
 
     @Test
