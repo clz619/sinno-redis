@@ -12,21 +12,24 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public class RedisDataSourceTest {
 
-    public static String host = "10.1.1.131";
-    public static int port = 6379;
-    public static int timeout = 5000;
-    public static String password = "redis";
-    public static int database = 2;
+  public static String host = "10.1.1.131";
+  public static int port = 6379;
+  public static int timeout = 5000;
+  public static String password = "redis";
+  public static int database = 2;
 
 
-    @Test
-    public void testRedisManager() {
+  @Test
+  public void testRedisManager() {
 
-        RedisDataSource redisDataSource = new RedisDataSource(new JedisPoolConfig(), host, port, timeout, password, database);
+    RedisDataSource redisDataSource = new RedisDataSource(new JedisPoolConfig(), host, port,
+        timeout, password, database);
 
-        redisDataSource.set("name", "ccc");
+    redisDataSource.set("name", "ccc");
 
-        System.out.println(redisDataSource.get("name"));
-    }
+    System.out.println(redisDataSource.get("name"));
+
+
+  }
 
 }

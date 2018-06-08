@@ -102,6 +102,11 @@
       <version>${version.redisson}</version>
     </dependency>
 
+    <dependency>
+      <groupId>win.sinno</groupId>
+      <artifactId>sinno-io</artifactId>
+    </dependency>
+
   </dependencies>
 
 </project>
